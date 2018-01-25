@@ -15,4 +15,59 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/et_ssid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="ssidNum"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="6dp" />
+
+    <Button
+        android:id="@+id/bt_ssid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="save"
+        app:layout_constraintLeft_toRightOf="@id/et_ssid"/>
+
+    <EditText
+        android:id="@+id/et_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Download Internavl "
+        app:layout_constraintTop_toBottomOf="@id/et_ssid"/>
+
+    <Button
+        android:id="@+id/bt_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="save"
+        app:layout_constraintTop_toBottomOf="@id/bt_ssid"
+        app:layout_constraintLeft_toRightOf="@id/et_interval"/>
+
+    <TextView
+        android:id="@+id/tx_ssid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="conf_ssid"
+        app:layout_constraintTop_toBottomOf="@id/et_interval"/>
+
+    <TextView
+        android:id="@+id/tx_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="conf_interval"
+        app:layout_constraintTop_toBottomOf="@id/tx_ssid" />
+
+    <TextView
+        android:id="@+id/tx_myservice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="service result"
+        app:layout_constraintTop_toBottomOf="@id/tx_interval" />
+
 </android.support.constraint.ConstraintLayout>

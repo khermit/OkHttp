@@ -5,11 +5,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
+//import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -54,15 +55,32 @@ public class MyService extends Service {
     public static final String TAG = "MyService";
     private Context mContext;
     private WifiAdmin wifiAdmin ;
+    private String ssid;
+    private String interval;
 
     public MyService() {
         Log.e("TAG", "MyService()");
     }
 
     @Nullable
-    @Override    public IBinder onBind(Intent intent) {
+    @Override
+    public IBinder onBind(Intent intent) {
         Log.e("TAG", "onBind()");
         return new Binder();
+    }
+
+    public class Binder extends android.os.Binder{
+        public void setSsid(String ssid){
+            MyService.this.ssid = ssid;
+            Toast.makeText(MyService.this, "ssid set succeed by Binder!", Toast.LENGTH_LONG).show();
+        }
+        public void setInterval(String interval){
+            MyService.this.interval = interval;
+            Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
+        }
+        public MyService getService(){
+            return MyService.this;
+        }
     }
 
     @Override
@@ -113,6 +131,10 @@ public class MyService extends Service {
                                 });
                     }else{
                         Log.e("wifi","no connection!");
+                    }
+
+                    if(null != callback){
+                        callback.onDataChange(df.format(new Date()));
                     }
                 }
             }
@@ -222,6 +244,20 @@ public class MyService extends Service {
     public void onDestroy(){
         super.onDestroy();
         Log.e("TAG", "MyService onDestroy()");
+    }
+
+    private Callback  callback = null;
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public static interface Callback{
+        void onDataChange(String data);
     }
 
 }
