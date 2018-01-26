@@ -543,7 +543,6 @@ public class WifiAdmin {
             for (int i=0; i< mWifiList.size(); i++){
                 sbuilder.append(mWifiList.get(i).level + " ");
                 sbuilder.append(mWifiList.get(i).frequency + " ");
-
             }
             mw.setScanstr(sbuilder.toString());
             Log.i("WifiAdmin", "____getSupplicantState:"+ mWifiInfo.toString());
