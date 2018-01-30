@@ -6,13 +6,17 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 //import android.os.Binder;
+import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.quan.wifilibrary.WiFiManager;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -51,12 +55,16 @@ import static java.lang.Thread.sleep;
  */
 
 public class MyService extends Service {
-    public MobileWifi mw = new MobileWifi();
+//    public MobileWifi mw = new MobileWifi();
     public static final String TAG = "MyService";
     private Context mContext;
     private WifiAdmin wifiAdmin ;
-    private String ssid;
-    private String interval;
+    private String ssid = "OW12_5G";
+    private int interval = 0;
+    private WiFiManager mWiFiManager;
+    private String ftpAddr = "202.117.10.67";
+    private String ftpUsername = "ylab";
+    private String ftpPasword = "ylab";
 
     public MyService() {
         Log.e("TAG", "MyService()");
@@ -72,12 +80,24 @@ public class MyService extends Service {
     public class Binder extends android.os.Binder{
         public void setSsid(String ssid){
             MyService.this.ssid = ssid;
-            Toast.makeText(MyService.this, "ssid set succeed by Binder!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MyService.this, "ssid set succeed by Binder!", Toast.LENGTH_LONG).show();
         }
-        public void setInterval(String interval){
-            MyService.this.interval = interval;
-            Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
+        public void setInterval(String str_interval){
+            MyService.this.interval = Integer.valueOf(str_interval);
+            //Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
         }
+        public void setFtpAddr(String str_ftpAddr){
+            MyService.this.ftpAddr = str_ftpAddr;
+            if (str_ftpAddr.equals("202.117.10.67")) {
+                ftpUsername = "ylab";
+                ftpPasword = "ylab";
+            } else {
+                ftpUsername = "quandk";
+                ftpPasword = "quandkq";
+            }
+            //Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
+        }
+
         public MyService getService(){
             return MyService.this;
         }
@@ -99,12 +119,14 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.e("TAG", "MyService onStartCommand()");
-        //新建线程一，获取数据，执行传输json数据操作
+        Log.i(TAG, "MyService onStartCommand()");
+
+
+        //新建线程 将数据传送给activity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.e("TAG", "Thread run");
+                Log.i("TAG", "Thread run: 上传数据");
                 String url = "http://202.117.49.160:8080/mobile/send";
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
                 while(true){
@@ -113,26 +135,28 @@ public class MyService extends Service {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    mw.setMobiletime(df.format(new Date()));
-                    mw.setNetrxspeed(NetworkSpeedUtils.RxSpeed);
-                    mw.setNettxspeed(NetworkSpeedUtils.TxSpeed);
-                    if(wifiAdmin.getWifiInfo(mw, mContext)){
-                        OkHttpUtils.postString().url(url).content(new Gson().toJson(mw))
-                                .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                                .build().execute(new StringCallback() {
-                                    @Override
-                                    public void onError(Call call, Exception e, int id) {
-                                        //Log.e("onError", e.getMessage());
-                                    }
-                                    @Override
-                                    public void onResponse(String response, int id) {
-                                        Log.e("PostResponse:",response);
-                                    }
-                                });
-                    }else{
-                        Log.e("wifi","no connection!");
-                    }
-
+//                    boolean res = mWiFiManager.hasNetwork();
+//                    Log.i(TAG, "当前网络状态： " + String.valueOf(res));
+//                    mw.setMobiletime(df.format(new Date()));
+//                    mw.setNetrxspeed(NetworkSpeedUtils.RxSpeed);
+//                    mw.setNettxspeed(NetworkSpeedUtils.TxSpeed);
+//                    if(wifiAdmin.getWifiInfo(mw, mContext)){
+//                        OkHttpUtils.postString().url(url).content(new Gson().toJson(mw))
+//                                .mediaType(MediaType.parse("application/json; charset=utf-8"))
+//                                .build().execute(new StringCallback() {
+//                                    @Override
+//                                    public void onError(Call call, Exception e, int id) {
+//                                        //Log.e("onError", e.getMessage());
+//                                    }
+//                                    @Override
+//                                    public void onResponse(String response, int id) {
+//                                        Log.e("PostResponse:",response);
+//                                    }
+//                                });
+//                        Log.i(TAG,"成功上传json数据");
+//                    }else{
+//                        Log.i(TAG,"Wifi 未连接");
+//                    }
                     if(null != callback){
                         callback.onDataChange(df.format(new Date()));
                     }
@@ -140,13 +164,23 @@ public class MyService extends Service {
             }
         }).start();
 
-        //新建线程二，执行测网速
+        //新建线程，执行测网速
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.e("TAG", "Thread run");
+                Log.e("TAG", "Thread run: 网速");
                 NetworkSpeedUtils networkSpeedUtils = new NetworkSpeedUtils();
                 networkSpeedUtils.startShowNetSpeed();
+            }
+        }).start();
+
+        //新建线程，上传数据
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("TAG", "Thread run: 上传数据");
+                UploadWifiDataTask uploadWifiDataTask = new UploadWifiDataTask();
+                uploadWifiDataTask.startUpload(mContext);
             }
         }).start();
 
@@ -155,24 +189,42 @@ public class MyService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.e(TAG, "Thread run");
-                Log.e(TAG,"connecting to ftp server...");
+                Log.i(TAG, "Thread run：下载");
+                Log.i(TAG,"connecting to ftp server...");
                 FTPManager ftpManager = new FTPManager();
-                Log.e(TAG,ftpManager.rootPath);
+                Log.i(TAG,ftpManager.rootPath);
                 long m = ( (long)(Math.random()*50) + 10 )*1000*60;
                 //m = 0;
                 while(true){
-                    m = ( (long)(Math.random()*50) + 10 )*1000*60;
-                    try {
-                        Thread.sleep(m);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    Log.i(TAG, "开始sleep：" + String.valueOf(m));
+                    //m = ( (long)(Math.random()*50) + 10 )*1000*60;
+                    if ( interval > 0 && interval < 60){
+                        try {
+                            Log.i(TAG, "ftp sleep interval: " + interval + " min");
+                            Thread.sleep(1000*60*interval);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else if( 0 == interval){
+                        Log.i(TAG, "ftp sleep 0 min");
+                    } else {
+                        try {
+                            m = (int)(Math.random()*50 + 1);
+                            Log.i(TAG, "ftp sleep random: " + m + " min");
+                            Thread.sleep(1000*60*m);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+
                     try {
-                        if(ftpManager.connect()){
+                        if(ftpManager.connect(ftpAddr, ftpUsername, ftpPasword)){
+                            Log.i(TAG, "FTP连接成功，即将开始下载...");
                             if(ftpManager.downloadFile(ftpManager.rootPath,"LDA.mp4")){
                                 ftpManager.closeFTP();
                             }
+                        }else{
+                            Log.i(TAG, "FTP连接失败！");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -236,6 +288,52 @@ public class MyService extends Service {
                 }
             }
         }).start();*/
+
+        //新建线程，监测wifi的情况，如果断开，则连接。
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("TAG", "Thread run： WIFI");
+                if(null == mWiFiManager){
+                    mWiFiManager = WiFiManager.getInstance(getApplicationContext());
+                }
+                while (true){
+                    mWiFiManager.openWiFi();
+                    if(mWiFiManager.isWifiEnabled()){
+                        Log.i(TAG, "Wwifi已经打开");
+                        if(mWiFiManager.isWifiConnected()){
+                            Log.i(TAG, "Wwifi已经连接");
+                            WifiInfo connectInfo = mWiFiManager.getConnectionInfo();
+                            String SSID = connectInfo.getSSID();
+                            if(SSID.equals("\"" + ssid + "\"")){
+                                Log.i(TAG, "已正确连接：" + SSID + " 状态良好");
+                                try {
+                                    sleep(1000*60*1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Log.i(TAG, "已错误连接：" + SSID + " 即将断开");
+                                boolean res = mWiFiManager.disconnectCurrentWifi();
+                                Log.i(TAG, "断开状态：" + String.valueOf(res));
+                            }
+                        } else {
+                            Log.i(TAG, "当前未连接任何wifi，即将开始连接已设置的ssid:" + ssid );
+                            boolean res = mWiFiManager.connectBeforeNetwork(ssid);
+                            Log.i(TAG, "连接"+ssid+"状态:" + String.valueOf(res));
+                        }
+
+                    } else {
+                        Log.i(TAG, "WIFI为关闭状态");
+                    }
+                    try {
+                        sleep(1000*10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
 
         return super.onStartCommand(intent, flags, startId);
     }

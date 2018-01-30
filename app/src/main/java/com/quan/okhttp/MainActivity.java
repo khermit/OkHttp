@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -26,6 +27,8 @@ import com.quan.wifilibrary.listener.OnWifiScanResultsListener;
 
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {
     private static final String TAG = "MainActivity";
 
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText et_ssid;
     private EditText et_interval;
     private EditText et_password;
+    private EditText et_ftpAddr;
 
     private TextView tx_ssid;
     private TextView tx_interval;
@@ -45,13 +49,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_ssid;
     private Button bt_interval;
     private Button bt_password;
+    private Button bt_ftpAddr;
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
-    private String str_ssid;
-    private String str_interval;
-    private String str_password = null;
+    private String str_ssid = "OW12_5G";
+    private String str_interval = "0";
+    private String str_password = "22222222";
+    private String str_ftpAddr = "202.117.10.67";
 
     private WiFiManager mWiFiManager;
 
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         et_ssid = (EditText) findViewById(R.id.et_ssid);
         et_interval = (EditText) findViewById(R.id.et_interval);
         et_password = (EditText) findViewById(R.id.et_password);
-
+        et_ftpAddr = (EditText) findViewById(R.id.et_ftpAddr);
 
         tx_ssid = (TextView) findViewById(R.id.tx_ssid);
         tx_interval = (TextView) findViewById(R.id.tx_interval);
@@ -79,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_ssid = (Button) findViewById(R.id.bt_ssid);
         bt_interval = (Button) findViewById(R.id.bt_interval);
         bt_password = (Button) findViewById(R.id.bt_password);
+        bt_ftpAddr = (Button) findViewById(R.id.bt_ftpAddr);
 
         mWiFiManager = WiFiManager.getInstance(getApplicationContext());
         mWiFiManager.openWiFi();
@@ -90,23 +97,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if( !ssid.equals("first") ) { //如果不是第一次，则回显之前的数据
             str_ssid = pref.getString("ssid","no data");
-            str_interval = pref.getString("interval","no data");
+            str_interval = pref.getString("interval","0");
             str_password = pref.getString("password", "no data");
+            str_ftpAddr = pref.getString("ftpAddr", "no data");
 
             et_ssid.setText(str_ssid);
             et_interval.setText(str_interval);
             et_password.setText(str_password);
+            et_ftpAddr.setText(str_ftpAddr);
 
-            tx_ssid.setText(str_ssid);
-            tx_interval.setText(str_interval);
+            tx_ssid.setText("ssid: " + str_ssid);
+            tx_interval.setText("interval: " + str_interval);
         }
 
         bt_ssid.setOnClickListener(this);
         bt_interval.setOnClickListener(this);
         bt_password.setOnClickListener(this);
+        bt_ftpAddr.setOnClickListener(this);
 
         startMyService();//启动服务
         bindMyService();//绑定服务
+
+        new Thread() {
+            @Override
+            public void run() {
+                Log.i(TAG, "将初始参数传递给MyService");
+                boolean flag = true;
+                while (flag){
+                    if (null != binder){
+                        binder.setInterval(str_interval);
+                        binder.setSsid(str_ssid);
+                        binder.setFtpAddr(str_ftpAddr);
+                        flag = false;
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -140,8 +166,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 editor.apply();
                 et_password.setText(str_password);
                 Toast.makeText(MainActivity.this, "password set succeed!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.bt_ftpAddr:
+                str_ftpAddr = et_ftpAddr.getText().toString();
+                editor.putString("ftpAddr",str_ftpAddr);
+                editor.apply();
+                et_ftpAddr.setText(str_ftpAddr);
+                if (null != binder){
+                    binder.setFtpAddr(str_ftpAddr);
+                }
+                Toast.makeText(MainActivity.this, "ftpAddr set succeed!", Toast.LENGTH_SHORT).show();
+                break;
         }
-
     }
 
     public void startMyService(){
@@ -209,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tx_wifi.setText(msg.getData().getString("wifi"));
                     break;
                 case UPDATE_MYSERVICE:
-                    tx_myservice.setText(msg.getData().getString("data"));
+                    tx_myservice.setText("MyService: " + msg.getData().getString("data"));
                     break;
                 default:
                     break;
@@ -242,33 +278,95 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Message msg = new Message();
         Bundle b = new Bundle();
         msg.what = UPDATE_WIFI;
-        b.putString("wifi", SSID + " connection succeess!");
+
+
+        String currrentSsid = mWiFiManager.getConnectionSsid();
+
+        if(!currrentSsid.contains("O")){
+            Log.i(TAG,"ssid not contain \"O\" wait 1s");
+            try {
+                sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            currrentSsid = mWiFiManager.getConnectionSsid();
+            Log.i(TAG,"after 1s ssid:" + currrentSsid );
+        } else {
+            Log.i(TAG,"ssid " + currrentSsid + " contain \"O\"");
+        }
+
+        b.putString("wifi", currrentSsid  + " connection succeess!");
         msg.setData(b);
         handler.sendMessage(msg);
+
+        if(!currrentSsid.equals("\"" + str_ssid + "\"")){
+            msg = Message.obtain();
+            msg.what = UPDATE_WIFI;
+            Bundle bb = new Bundle();
+
+            bb.putString("wifi", currrentSsid + "is not expected! disconnectting... " );
+            msg.setData(b);
+            handler.sendMessage(msg);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "onWiFiConnectSuccess listener:" + "ready to disconnect");
+                    boolean rre = mWiFiManager.disconnectCurrentWifi();
+                    Log.i(TAG, "onWiFiConnectSuccess listener:" + "disconnect res: " + rre);
+                }
+            }.start();
+
+
+        }
     }
     /** WIFI连接失败的回调
      * @param SSID 热点名
      */
     @Override
     public void onWiFiConnectFailure(String SSID) {
-        Log.i(TAG, "onWiFiConnectFailure listener:" + SSID);
-        Message msg = new Message();
-        Bundle b = new Bundle();
-        b.putString("wifi", SSID + " connection failed! ready to reconnect");
-        msg.what = UPDATE_WIFI;
-        msg.setData(b);
-        handler.sendMessage(msg);
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
 
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                mWiFiManager.connectWPA2Network(str_ssid, str_password);
-//            }
-//        }.start();
 
-        b.putString("wifi", SSID + "reconnectting... " );
-        msg.setData(b);
-        handler.sendMessage(msg);
+        }
+        String currentSsid = mWiFiManager.getConnectionSsid();
+        if(currentSsid.contains("OW"))
+        {
+            Log.i(TAG, "onWiFiConnectFailure listener: currentSsid contains OW . " + currentSsid);
+        } else {
+            Log.i(TAG, "onWiFiConnectFailure listener:" + SSID + " and now currentSsid is: " + mWiFiManager.getConnectionSsid());
+            Message msg = new Message();
+            Bundle b = new Bundle();
+            b.putString("wifi", SSID + " connection failed! ready to reconnect");
+            msg.what = UPDATE_WIFI;
+            msg.setData(b);
+            handler.sendMessage(msg);
+
+            new Thread() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "onWifiEnabled listener:" + "ready to connect:" + str_ssid);
+                    try {
+                        sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    boolean rre = mWiFiManager.connectBeforeNetwork(str_ssid);
+                    Log.i(TAG, "onWifiEnabled listener:" + "connect res: " + String.valueOf(rre));
+                }
+            }.start();
+
+            msg = Message.obtain();
+            msg.what = UPDATE_WIFI;
+            Bundle bb = new Bundle();
+
+            bb.putString("wifi", SSID + "reconnectting... " );
+            msg.setData(bb);
+            handler.sendMessage(msg);
+        }
+
 
     }
     /** WIFI开关的回调
@@ -294,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void run() {
                     Log.i(TAG, "onWifiEnabled listener:" + "ready to connect:" + str_ssid);
                     boolean rre = mWiFiManager.connectBeforeNetwork(str_ssid);
-                    Log.i(TAG, "onWifiEnabled listener:" + "connect res: " + rre);
+                    Log.i(TAG, "onWifiEnabled listener:" + "connect res: " + String.valueOf(rre));
                 }
             }.start();
 

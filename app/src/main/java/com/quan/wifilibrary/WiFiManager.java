@@ -18,6 +18,7 @@ import com.quan.wifilibrary.listener.OnWifiScanResultsListener;
 
 import java.util.List;
 
+import static java.lang.Thread.sleep;
 
 
 /**
@@ -216,7 +217,7 @@ public class WiFiManager extends BaseWiFiManager {
                     WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
                     if (null != wifiInfo && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
                         String ssid = wifiInfo.getSSID();
-                        Log.i(TAG, "onReceive: 网络连接成功 ssid = " + ssid);
+                        Log.i(TAG, "onReceive: 网络连接成功1 ssid = " + ssid);
                         Message CompletedMessage = Message.obtain();
                         CompletedMessage.what = WIFI_CONNECT_SUCCESS; //网络连接成功。。。。。。。。。。。。。。。。。。。。。。
                         CompletedMessage.obj = ssid;
@@ -224,6 +225,12 @@ public class WiFiManager extends BaseWiFiManager {
                     }
                     if (null != wifiInfo && wifiInfo.getSupplicantState() == SupplicantState.DISCONNECTED) {
                         //处理未连上的。。。。
+                        Log.i(TAG, "onReceive: 网络连接失败 DISCONNECTED");
+                        WifiInfo connectFailureInfo = wifiManager.getConnectionInfo();
+                        Message CompletedMessage = Message.obtain();
+                        CompletedMessage.what = WIFI_CONNECT_FAILURE; //网络连接失败。。。。。。。。。。。。。。。。。。。。。。
+                        CompletedMessage.obj = connectFailureInfo.getRssi();
+                        mCallBackHandler.sendMessage(CompletedMessage);
                     }
                     break;
                 case WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION:
@@ -352,7 +359,7 @@ public class WiFiManager extends BaseWiFiManager {
                     break;
                 case WIFI_CONNECT_FAILURE: // WIFI连接失败
                     if (null != mOnWifiConnectListener) {
-                        String ssid = (String) msg.obj;
+                        String ssid = String.valueOf(msg.obj);
                         mOnWifiConnectListener.onWiFiConnectFailure(ssid);
                     }
                     break;

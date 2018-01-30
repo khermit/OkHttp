@@ -193,7 +193,7 @@ public class BaseWiFiManager {
      *
      * @return 是否连接
      */
-    boolean isWifiConnected() {
+    public boolean isWifiConnected() {
         if (null != mConnectivityManager) {
             NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
             return null != networkInfo && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
@@ -206,7 +206,7 @@ public class BaseWiFiManager {
      *
      * @return 网络状态
      */
-    boolean hasNetwork() {
+    public boolean hasNetwork() {
         if (null != mConnectivityManager) {
             NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
             return networkInfo != null && networkInfo.isAvailable();
@@ -222,6 +222,18 @@ public class BaseWiFiManager {
     public WifiInfo getConnectionInfo() {
         if (null != mWifiManager) {
             return mWifiManager.getConnectionInfo();
+        }
+        return null;
+    }
+
+    /**
+     * 获取当前正在连接的WIFI信息
+     *
+     * @return 当前正在连接的WIFI信息
+     */
+    public String  getConnectionSsid() {
+        if (null != mWifiManager) {
+            return mWifiManager.getConnectionInfo().getSSID();
         }
         return null;
     }

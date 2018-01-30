@@ -27,16 +27,16 @@ public class FTPManager {
     }
 
     //连接到ftp服务器
-    public synchronized boolean connect() throws IOException {
+    public synchronized boolean connect(String ip, String username, String password) throws IOException {
         boolean bool = false;
         if (ftpClient.isConnected()){ //判断是否已经登录
             ftpClient.disconnect();
         }
         ftpClient.setDataTimeout(20000);//设置连接超时时间
         ftpClient.setControlEncoding("utf-8");
-        ftpClient.connect("202.117.49.160",21);
+        ftpClient.connect(ip,21);
         if (FTPReply.isPositiveCompletion(ftpClient.getReplyCode())){
-            if (ftpClient.login("quandk","quandkq")){
+            if (ftpClient.login(username,password)){
                 bool = true;
                 Log.e("FTPManager", "ftp connected succeed");
             }

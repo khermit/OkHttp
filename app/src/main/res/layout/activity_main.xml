@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.quan.okhttp.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/et_ssid"
@@ -37,7 +29,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Download Internavl "
+        android:hint="ssid Password "
         app:layout_constraintTop_toBottomOf="@id/et_ssid" />
 
     <EditText
@@ -46,7 +38,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="ssid Password "
+        android:hint="FTP Download Internavl "
         app:layout_constraintTop_toBottomOf="@id/et_password"/>
 
     <Button
@@ -55,7 +47,7 @@
         android:layout_height="wrap_content"
         android:text="save"
         app:layout_constraintTop_toBottomOf="@id/bt_ssid"
-        app:layout_constraintLeft_toRightOf="@id/et_interval"/>
+        app:layout_constraintLeft_toRightOf="@id/et_password"/>
 
 
 
@@ -65,7 +57,24 @@
         android:layout_height="wrap_content"
         android:text="save"
         app:layout_constraintTop_toBottomOf="@id/bt_password"
-        app:layout_constraintLeft_toRightOf="@id/et_password"/>
+        app:layout_constraintLeft_toRightOf="@id/et_interval"/>
+
+    <EditText
+        android:id="@+id/et_ftpAddr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="FTP addr"
+        app:layout_constraintTop_toBottomOf="@id/et_interval"/>
+
+    <Button
+        android:id="@+id/bt_ftpAddr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="save"
+        app:layout_constraintTop_toBottomOf="@id/bt_interval"
+        app:layout_constraintLeft_toRightOf="@id/et_ftpAddr"/>
 
     <TextView
         android:id="@+id/tx_ssid"
@@ -73,7 +82,7 @@
         android:layout_height="wrap_content"
         android:text="conf_ssid"
         android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/et_interval"/>
+        app:layout_constraintTop_toBottomOf="@id/et_ftpAddr"/>
 
     <TextView
         android:id="@+id/tx_interval"
@@ -107,5 +116,14 @@
         android:layout_marginTop="6dp"
         app:layout_constraintTop_toBottomOf="@id/tx_myservice"
         app:layout_constraintLeft_toRightOf="@id/tx_wifistate" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tx_wifistate" />
 
 </android.support.constraint.ConstraintLayout>
