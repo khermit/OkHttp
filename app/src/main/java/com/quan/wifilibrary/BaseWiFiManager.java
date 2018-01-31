@@ -18,6 +18,7 @@ import java.util.Map;
 
 /**
  * Created by quandk on 18-1-26.
+ * 参考自：https://github.com/kongqw/AndroidWiFiManager
  */
 
 public class BaseWiFiManager {
