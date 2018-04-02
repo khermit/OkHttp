@@ -57,32 +57,34 @@ public class FTPManager {
         localPath = localPath + files[0].getName();
         // 接着判断下载的文件是否能断点下载
         long serverSize = files[0].getSize(); // 获取远程文件的长度
-        File localFile = new File(localPath);
-        long localSize = 0;
-        if (localFile.exists()) {
-            localSize = localFile.length(); // 如果本地文件存在，获取本地文件的长度
-            if (localSize >= serverSize) {
-                System.out.println("文件已经下载完了");
-                File file = new File(localPath);
-                file.delete();
-                System.out.println("本地文件存在，删除成功，开始重新下载");
-                //return false;
-            }
-        }
+//        File localFile = new File(localPath);
+//        long localSize = 0;
+//        if (localFile.exists()) {
+//            localSize = localFile.length(); // 如果本地文件存在，获取本地文件的长度
+//            if (localSize >= serverSize) {
+//                System.out.println("文件已经下载完了");
+//                File file = new File(localPath);
+//                file.delete();
+//                System.out.println("本地文件存在，删除成功，开始重新下载");
+//                localSize = 0;
+//                //return false;
+//            }
+//        }
         // 进度
         long step = serverSize / 100;
         long process = 0;
         long currentSize = 0;
         // 开始准备下载文件
-        ftpClient.enterLocalActiveMode();
-        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-        OutputStream out = new FileOutputStream(localFile, true);
-        ftpClient.setRestartOffset(localSize);
+        ftpClient.enterLocalActiveMode(); //设置被动模式
+        ftpClient.setFileType(FTP.BINARY_FILE_TYPE); //设置文件传输模式
+//        OutputStream out = new FileOutputStream(localFile, true);
+//        ftpClient.setRestartOffset(localSize); //设置恢复下载的位置
+        ftpClient.setRestartOffset(0);
         InputStream input = ftpClient.retrieveFileStream(serverPath);
         byte[] b = new byte[1024];
         int length = 0;
         while ((length = input.read(b)) != -1) {
-            out.write(b, 0, length);
+//            out.write(b, 0, length);
             currentSize = currentSize + length;
             if (currentSize / step != process) {
                 process = currentSize / step;
@@ -91,8 +93,8 @@ public class FTPManager {
                 }
             }
         }
-        out.flush();
-        out.close();
+//        out.flush();
+//        out.close();
         input.close();
         // 此方法是来确保流处理完毕，如果没有此方法，可能会造成现程序死掉
         if (ftpClient.completePendingCommand()) {

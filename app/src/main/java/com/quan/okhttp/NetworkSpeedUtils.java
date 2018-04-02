@@ -20,6 +20,8 @@ public class NetworkSpeedUtils {
     private long lastTotalTxBytes = 0;
     private long newTotalRxBytes = 0;
     private long newTotalTxBytes = 0;
+    private long lastTimeStamp = 0;
+    private long nowTimeStamp = 0;
     public static double RxSpeed = 0;
     public static double TxSpeed = 0;
     TimerTask task = new TimerTask() {
@@ -31,15 +33,18 @@ public class NetworkSpeedUtils {
     public void startShowNetSpeed(){
         lastTotalRxBytes = getTotalRxBytes();
         lastTotalTxBytes = getTotalTxBytes();
-        new Timer().schedule(task, 1000, 1000);//1s后启动任务, 每1s执行一次
+        lastTimeStamp = System.currentTimeMillis();
+        new Timer().schedule(task, 4000, 4000);//1s后启动任务, 每1s执行一次
     }
     public void computeNetSpeed(){
         newTotalRxBytes = getTotalRxBytes();
-        newTotalTxBytes = getTotalTxBytes();
-        RxSpeed = (newTotalRxBytes - lastTotalRxBytes);
-        TxSpeed = (newTotalTxBytes - lastTotalTxBytes);
+        nowTimeStamp = System.currentTimeMillis();
+//        newTotalTxBytes = getTotalTxBytes();
+        RxSpeed = (newTotalRxBytes - lastTotalRxBytes)*1000/((nowTimeStamp - lastTimeStamp)*1024);
+//        TxSpeed = (newTotalTxBytes - lastTotalTxBytes)/2;
         lastTotalRxBytes = newTotalRxBytes;
-        lastTotalTxBytes = newTotalTxBytes;
+        lastTimeStamp = nowTimeStamp;
+//        lastTotalTxBytes = newTotalTxBytes;
         Log.e(TAG, RxSpeed + "b/s ");
     }
 }

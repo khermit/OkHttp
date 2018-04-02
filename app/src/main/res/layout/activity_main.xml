@@ -10,7 +10,7 @@
     <EditText
         android:id="@+id/et_ssid"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="39dip"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="ssidNum"
@@ -19,14 +19,15 @@
     <Button
         android:id="@+id/bt_ssid"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
         android:text="save"
         app:layout_constraintLeft_toRightOf="@id/et_ssid"/>
 
     <EditText
         android:id="@+id/et_password"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="39dip"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="ssid Password "
@@ -35,7 +36,7 @@
     <EditText
         android:id="@+id/et_interval"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="39dip"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="FTP Download Internavl "
@@ -44,8 +45,9 @@
     <Button
         android:id="@+id/bt_password"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="save"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="pswd"
         app:layout_constraintTop_toBottomOf="@id/bt_ssid"
         app:layout_constraintLeft_toRightOf="@id/et_password"/>
 
@@ -54,15 +56,16 @@
     <Button
         android:id="@+id/bt_interval"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="save"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="inter"
         app:layout_constraintTop_toBottomOf="@id/bt_password"
         app:layout_constraintLeft_toRightOf="@id/et_interval"/>
 
     <EditText
         android:id="@+id/et_ftpAddr"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="39dip"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="FTP addr"
@@ -71,10 +74,68 @@
     <Button
         android:id="@+id/bt_ftpAddr"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="save"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="ftp addr"
         app:layout_constraintTop_toBottomOf="@id/bt_interval"
         app:layout_constraintLeft_toRightOf="@id/et_ftpAddr"/>
+
+    <EditText
+        android:id="@+id/et_ftpUser"
+        android:layout_width="wrap_content"
+        android:layout_height="39dip"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="FTP User"
+        app:layout_constraintTop_toBottomOf="@id/et_ftpAddr"/>
+
+    <Button
+        android:id="@+id/bt_ftpUser"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="ftp user"
+        app:layout_constraintTop_toBottomOf="@id/bt_ftpAddr"
+        app:layout_constraintLeft_toRightOf="@id/et_ftpUser"/>
+
+    <EditText
+        android:id="@+id/et_ftpPswd"
+        android:layout_width="wrap_content"
+        android:layout_height="39dip"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="FTP Pswd"
+        app:layout_constraintTop_toBottomOf="@id/et_ftpUser"/>
+
+    <Button
+        android:id="@+id/bt_ftpPswd"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="ftp pswd"
+        app:layout_constraintTop_toBottomOf="@id/bt_ftpUser"
+        app:layout_constraintLeft_toRightOf="@id/et_ftpUser"/>
+
+    <EditText
+        android:id="@+id/et_okhttpaddr"
+        android:layout_width="wrap_content"
+        android:layout_height="39dip"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="okHttp Addr"
+        app:layout_constraintTop_toBottomOf="@id/et_ftpPswd"/>
+
+    <Button
+        android:id="@+id/bt_okhttpaddr"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="okHttpAddr"
+        app:layout_constraintTop_toBottomOf="@id/bt_ftpPswd"
+        app:layout_constraintLeft_toRightOf="@id/et_ftpUser"/>
+
+
+    <!--　text -->
 
     <TextView
         android:id="@+id/tx_ssid"
@@ -82,7 +143,7 @@
         android:layout_height="wrap_content"
         android:text="conf_ssid"
         android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/et_ftpAddr"/>
+        app:layout_constraintTop_toBottomOf="@id/et_okhttpaddr"/>
 
     <TextView
         android:id="@+id/tx_interval"

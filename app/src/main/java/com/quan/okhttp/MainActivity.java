@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText et_interval;
     private EditText et_password;
     private EditText et_ftpAddr;
+    private EditText et_ftpUser;
+    private EditText et_ftpPswd;
+    private EditText et_okhttpaddr;
 
     private TextView tx_ssid;
     private TextView tx_interval;
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_interval;
     private Button bt_password;
     private Button bt_ftpAddr;
+    private Button bt_ftpUser;
+    private Button bt_ftpPswd;
+    private Button bt_okhttpaddr;
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -59,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String str_interval = "0";
     private String str_password = "22222222";
     private String str_ftpAddr = "202.117.10.67";
+    private String str_ftpUser = "ylab";
+    private String str_ftpPswd = "ylab";
+    private String str_okhttpaddr = "202.117.10.67";
 
     private WiFiManager mWiFiManager;
 
@@ -80,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         et_interval = (EditText) findViewById(R.id.et_interval);
         et_password = (EditText) findViewById(R.id.et_password);
         et_ftpAddr = (EditText) findViewById(R.id.et_ftpAddr);
+        et_ftpUser = (EditText) findViewById(R.id.et_ftpUser);
+        et_ftpPswd = (EditText) findViewById(R.id.et_ftpPswd);
+        et_okhttpaddr = (EditText) findViewById(R.id.et_okhttpaddr);
 
         tx_ssid = (TextView) findViewById(R.id.tx_ssid);
         tx_interval = (TextView) findViewById(R.id.tx_interval);
@@ -90,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_interval = (Button) findViewById(R.id.bt_interval);
         bt_password = (Button) findViewById(R.id.bt_password);
         bt_ftpAddr = (Button) findViewById(R.id.bt_ftpAddr);
+        bt_ftpUser = (Button) findViewById(R.id.bt_ftpUser);
+        bt_ftpPswd = (Button) findViewById(R.id.bt_ftpPswd);
+        bt_okhttpaddr = (Button) findViewById(R.id.bt_okhttpaddr);
 
         mWiFiManager = WiFiManager.getInstance(getApplicationContext());
         mWiFiManager.openWiFi();
@@ -104,11 +119,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             str_interval = pref.getString("interval","0");
             str_password = pref.getString("password", "no data");
             str_ftpAddr = pref.getString("ftpAddr", "no data");
+            str_ftpUser = pref.getString("ftpUser", "no data");
+            str_ftpPswd = pref.getString("ftpPswd", "no data");
+            str_okhttpaddr = pref.getString("okhttpaddr", "no data");
 
             et_ssid.setText(str_ssid);
             et_interval.setText(str_interval);
             et_password.setText(str_password);
             et_ftpAddr.setText(str_ftpAddr);
+            et_ftpUser.setText(str_ftpUser);
+            et_ftpPswd.setText(str_ftpPswd);
+            et_okhttpaddr.setText(str_okhttpaddr);
 
             tx_ssid.setText("ssid: " + str_ssid);
             tx_interval.setText("interval: " + str_interval);
@@ -118,6 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_interval.setOnClickListener(this);
         bt_password.setOnClickListener(this);
         bt_ftpAddr.setOnClickListener(this);
+        bt_ftpUser.setOnClickListener(this);
+        bt_ftpPswd.setOnClickListener(this);
+        bt_okhttpaddr.setOnClickListener(this);
 
         startMyService();//启动服务
         bindMyService();//绑定服务
@@ -180,6 +204,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     binder.setFtpAddr(str_ftpAddr);
                 }
                 Toast.makeText(MainActivity.this, "ftpAddr set succeed!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.bt_ftpUser:
+                str_ftpUser = et_ftpUser.getText().toString();
+                editor.putString("ftpUser",str_ftpUser);
+                editor.apply();
+                et_ftpUser.setText(str_ftpUser);
+                if (null != binder){
+                    binder.setFtpUser(str_ftpUser);
+                }
+                Toast.makeText(MainActivity.this, "ftpUser set succeed!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.bt_ftpPswd:
+                str_ftpPswd = et_ftpPswd.getText().toString();
+                editor.putString("ftpPswd",str_ftpPswd);
+                editor.apply();
+                et_ftpPswd.setText(str_ftpPswd);
+                if (null != binder){
+                    binder.setFtpPswd(str_ftpPswd);
+                }
+                Toast.makeText(MainActivity.this, "ftpPswd set succeed!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.bt_okhttpaddr:
+                str_okhttpaddr = et_okhttpaddr.getText().toString();
+                editor.putString("okhttpaddr",str_okhttpaddr);
+                editor.apply();
+                et_okhttpaddr.setText(str_okhttpaddr);
+                if (null != binder){
+                    binder.setOkhttpaddr(str_okhttpaddr);
+                }
+                Toast.makeText(MainActivity.this, "okhttpaddr set succeed!", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

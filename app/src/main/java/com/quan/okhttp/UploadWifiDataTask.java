@@ -26,7 +26,7 @@ public class UploadWifiDataTask {
     public MobileWifi mw = new MobileWifi();
     private WifiAdmin wifiAdmin ;
     private Context mContext;
-    private String url = "http://202.117.49.160:8080/mobile/send";
+    private String url = "http://192.168.0.102:8080/mobile/send";
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     TimerTask task = new TimerTask() {
         @Override
@@ -34,8 +34,9 @@ public class UploadWifiDataTask {
             uploadWifiDataFunc();
         }
     };
-    public void startUpload(Context context){
+    public void startUpload(Context context, String okhttpaddr){
         mContext = context;
+        url = "http://" + okhttpaddr + ":8080/mobile/send";
         wifiAdmin = new WifiAdmin(mContext);
         new Timer().schedule(task, 1000, 1000);//2s后启动任务, 每1s执行一次
     }

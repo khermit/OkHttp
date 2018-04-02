@@ -33,6 +33,7 @@ public class MobileWifi {
 
     private String scanstr;
 
+
     public Double getNetrxspeed() {
         return netrxspeed;
     }
