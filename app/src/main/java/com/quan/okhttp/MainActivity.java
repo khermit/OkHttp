@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tx_interval;
     private TextView tx_myservice;
     private TextView tx_wifi;
+    private TextView tx_ftpupload;
 
     private Button bt_ssid;
     private Button bt_interval;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_ftpUser;
     private Button bt_ftpPswd;
     private Button bt_okhttpaddr;
+    private Button bt_switch;
+    private Button bt_ftpupload;
+    private Button bt_ftpuploadaddr;
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -69,10 +73,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String str_ftpPswd = "ylab";
     private String str_okhttpaddr = "202.117.10.67";
 
+    private String ssid = "";
+
     private WiFiManager mWiFiManager;
 
     public static final int UPDATE_WIFI = 1;
     public static final int UPDATE_MYSERVICE = 2;
+    public static final int UPDATE_MYSERVICE_UPLOAD = 3;
 
 
     @Override
@@ -97,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tx_interval = (TextView) findViewById(R.id.tx_interval);
         tx_myservice = (TextView) findViewById(R.id.tx_myservice);
         tx_wifi = (TextView) findViewById(R.id.tx_wifi);
+        tx_ftpupload = (TextView) findViewById(R.id.tx_ftpupload);
 
         bt_ssid = (Button) findViewById(R.id.bt_ssid);
         bt_interval = (Button) findViewById(R.id.bt_interval);
@@ -105,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_ftpUser = (Button) findViewById(R.id.bt_ftpUser);
         bt_ftpPswd = (Button) findViewById(R.id.bt_ftpPswd);
         bt_okhttpaddr = (Button) findViewById(R.id.bt_okhttpaddr);
+        bt_switch = (Button) findViewById(R.id.bt_switch);
+        bt_ftpupload = (Button) findViewById(R.id.bt_ftpupload);
+        bt_ftpuploadaddr = (Button) findViewById(R.id.bt_ftpuploadaddr);
 
         mWiFiManager = WiFiManager.getInstance(getApplicationContext());
         mWiFiManager.openWiFi();
@@ -142,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_ftpUser.setOnClickListener(this);
         bt_ftpPswd.setOnClickListener(this);
         bt_okhttpaddr.setOnClickListener(this);
+        bt_switch.setOnClickListener(this);
+        bt_ftpupload.setOnClickListener(this);
+        bt_ftpuploadaddr.setOnClickListener(this);
 
         startMyService();//启动服务
         bindMyService();//绑定服务
@@ -235,6 +249,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 Toast.makeText(MainActivity.this, "okhttpaddr set succeed!", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.bt_switch:
+                UploadWifiDataTask.isInsert = UploadWifiDataTask.isInsert ? false : true;
+                if(UploadWifiDataTask.isInsert)
+                    bt_switch.setText("switch: on");
+                else
+                    bt_switch.setText("switch: off");
+                break;
+            case R.id.bt_ftpupload:
+                ssid = et_ssid.getText().toString();
+                if(null != binder){
+                    binder.startFtpUpload(ssid);
+                }
+                Toast.makeText(MainActivity.this, "start upload!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.bt_ftpuploadaddr:
+                MyService.ftpUploadAddr = MyService.ftpUploadAddr ? false : true;
+                if(MyService.ftpUploadAddr)
+                    bt_ftpuploadaddr.setText("up addr: ok");
+                else
+                    bt_ftpuploadaddr.setText("up addr: ftp");
+                break;
         }
     }
 
@@ -266,6 +301,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Bundle b = new Bundle();
                             b.putString("data", data);
                             msg.what = UPDATE_MYSERVICE;
+                            msg.setData(b);
+                            handler.sendMessage(msg);
+                        }
+
+                        @Override
+                        public void onFtpUploadDataChange(String data) {
+                            Message msg = new Message();
+                            Bundle b = new Bundle();
+                            b.putString("data", data);
+                            msg.what = UPDATE_MYSERVICE_UPLOAD;
                             msg.setData(b);
                             handler.sendMessage(msg);
                         }
@@ -304,6 +349,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case UPDATE_MYSERVICE:
                     tx_myservice.setText("MyService: " + msg.getData().getString("data"));
+                    break;
+                case UPDATE_MYSERVICE_UPLOAD:
+                    tx_ftpupload.setText("upload state:" + msg.getData().getString("data"));
                     break;
                 default:
                     break;
@@ -354,6 +402,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         b.putString("wifi", currrentSsid  + " connection succeess!");
+        WifiAdmin.isConnection = 1;
         msg.setData(b);
         handler.sendMessage(msg);
 
@@ -383,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onWiFiConnectFailure(String SSID) {
+        WifiAdmin.isConnection = 0;
         try {
             sleep(1000);
         } catch (InterruptedException e) {
@@ -464,6 +514,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }else{
             b.putString("wifi", "wifi closed!");
+            WifiAdmin.isConnection = 0;
             msg.setData(b);
             handler.sendMessage(msg);
         }

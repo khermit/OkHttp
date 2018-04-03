@@ -134,6 +134,41 @@
         app:layout_constraintTop_toBottomOf="@id/bt_ftpPswd"
         app:layout_constraintLeft_toRightOf="@id/et_ftpUser"/>
 
+    <Button
+        android:id="@+id/bt_ftpuploadaddr"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="up addr: ok"
+        app:layout_constraintTop_toBottomOf="@id/et_okhttpaddr"/>
+
+    <Button
+        android:id="@+id/bt_ftpupload"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="upload"
+        app:layout_constraintTop_toBottomOf="@id/et_okhttpaddr"
+        app:layout_constraintLeft_toRightOf="@id/bt_ftpuploadaddr"/>
+
+    <TextView
+        android:id="@+id/tx_ftpupload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="upload state"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintTop_toBottomOf="@id/bt_okhttpaddr"
+        app:layout_constraintLeft_toRightOf="@id/bt_ftpupload"/>
+
+    <Button
+        android:id="@+id/bt_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="38dip"
+        android:textSize="10dp"
+        android:text="switch: off"
+        app:layout_constraintTop_toBottomOf="@id/bt_ftpuploadaddr"/>
+
 
     <!--　text -->
 
@@ -143,7 +178,7 @@
         android:layout_height="wrap_content"
         android:text="conf_ssid"
         android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/et_okhttpaddr"/>
+        app:layout_constraintTop_toBottomOf="@id/bt_switch"/>
 
     <TextView
         android:id="@+id/tx_interval"

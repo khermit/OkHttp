@@ -34,7 +34,7 @@ public class NetworkSpeedUtils {
         lastTotalRxBytes = getTotalRxBytes();
         lastTotalTxBytes = getTotalTxBytes();
         lastTimeStamp = System.currentTimeMillis();
-        new Timer().schedule(task, 4000, 4000);//1s后启动任务, 每1s执行一次
+        new Timer().schedule(task, 1000, 1000);//1s后启动任务, 每1s执行一次
     }
     public void computeNetSpeed(){
         newTotalRxBytes = getTotalRxBytes();

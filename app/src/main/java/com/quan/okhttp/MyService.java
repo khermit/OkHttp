@@ -57,6 +57,7 @@ import static java.lang.Thread.sleep;
 public class MyService extends Service {
 //    public MobileWifi mw = new MobileWifi();
     public static final String TAG = "MyService";
+    public static boolean ftpUploadAddr = true; //okhttpaddr
     private Context mContext;
     private WifiAdmin wifiAdmin ;
     private String ssid = "OW12_5G";
@@ -99,6 +100,10 @@ public class MyService extends Service {
         }
         public void setOkhttpaddr(String str_okhttpaddr){
             okhttpaddr = str_okhttpaddr;
+        }
+
+        public void startFtpUpload(String ssid){
+            startUpload(ssid);
         }
 
         public MyService getService(){
@@ -240,54 +245,58 @@ public class MyService extends Service {
 
     public static interface Callback{
         void onDataChange(String data);
+        void onFtpUploadDataChange(String data);
     }
 
-    private void startMyDownload(String downloadMyFilename){
-        final String myDownloadFileName = downloadMyFilename;
-        //新建线程三，执行下载操作
+
+    private void startUpload(String ssid){
+        //新建线程，执行上传操作
+        final String mySsid = ssid;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "Thread run：下载");
+                Log.i(TAG, "Thread run：上传");
                 Log.i(TAG,"connecting to ftp server...");
                 FTPManager ftpManager = new FTPManager();
                 Log.i(TAG,ftpManager.rootPath);
-                long m = ( (long)(Math.random()*50) + 10 )*1000*60;
-                //m = 0;
-                while(true){
-                    Log.i(TAG, "开始sleep：" + String.valueOf(m));
-                    //m = ( (long)(Math.random()*50) + 10 )*1000*60;
-                    if ( interval > 0 && interval < 60){
-                        try {
-                            Log.i(TAG, "ftp sleep interval: " + interval + " min");
-                            Thread.sleep(1000*60*interval);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else if( 0 == interval){
-                        Log.i(TAG, "ftp sleep 0 min");
-                    } else {
-                        try {
-                            m = (int)(Math.random()*50 + 1);
-                            Log.i(TAG, "ftp sleep random: " + m + " min");
-                            Thread.sleep(1000*60*m);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
 
-                    try {
-                        if(ftpManager.connect(ftpAddr, ftpUsername, ftpPasword)){
-                            Log.i(TAG, "FTP连接成功，即将开始下载...");
-                            if(ftpManager.downloadFile(ftpManager.rootPath,myDownloadFileName)){
-                                ftpManager.closeFTP();
-                            }
-                        }else{
-                            Log.i(TAG, "FTP连接失败！");
+                String uploadFtpAddr = ftpAddr;
+                String uploadFtpUsername = ftpUsername;
+                String uploadFtpPasword = ftpPasword;
+
+                if(MyService.ftpUploadAddr){ //okhttpaddr
+                    uploadFtpAddr = okhttpaddr;
+                    uploadFtpUsername = "quandk";
+                    uploadFtpPasword  = "quandkq";
+                }
+
+                String localPath = "/storage/emulated/0/1Wifi/mobilewifi.db";
+                Date day = new Date();
+                SimpleDateFormat df  = new SimpleDateFormat("yyyyMMdd");
+                String currentDay = df.format(day);
+                String serverPath = currentDay + "/" + mySsid + "/";
+
+                try {
+                    if(ftpManager.connect(uploadFtpAddr, uploadFtpUsername, uploadFtpPasword)){
+                        Log.i(TAG, "FTP连接成功，即将开始上传...");
+                        if(null != callback){
+                            callback.onFtpUploadDataChange("ready!");
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        if(ftpManager.uploadFile(localPath,serverPath)){
+                            Log.i(TAG, "FTP上传成功！");
+                            ftpManager.closeFTP();
+                            if(null != callback){
+                                callback.onFtpUploadDataChange("success!");
+                            }
+                        }
+                    }else{
+                        Log.i(TAG, "FTP连接失败！");
+                        if(null != callback){
+                            callback.onFtpUploadDataChange("fail!");
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }).start();

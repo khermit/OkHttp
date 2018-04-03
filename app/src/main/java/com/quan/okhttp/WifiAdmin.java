@@ -17,6 +17,7 @@ import java.util.List;
  */
 
 public class WifiAdmin {
+    public static int isConnection = 0;
     private WifiManager mWifiManager;
     private WifiInfo mWifiInfo;
     private List<ScanResult> mWifiList;
@@ -537,8 +538,8 @@ public class WifiAdmin {
             mw.setBssid(mWifiInfo.getBSSID());
 
             score = mWifiInfo.toString().split(" ");
-            mw.setScore(Integer.parseInt(score[score.length-1]));
-
+//            mw.setScore(Integer.parseInt(score[score.length-1]));
+            mw.setScore(isConnection); //此时,score代表时候连接wifi。
             sbuilder.delete(0,sbuilder.length());//delete快于setLength(0)快于新建sbuilder
             for (int i=0; i< mWifiList.size(); i++){
                 sbuilder.append(mWifiList.get(i).level + " ");
