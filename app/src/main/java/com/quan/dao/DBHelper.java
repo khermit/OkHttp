@@ -22,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String CREATE_TABLE_STUDENT="CREATE TABLE IF NOT EXISTS mobilewifi ( " +
                 "id" + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
 
-                "ltime" + " TEXT ," +
+                "ltime" + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ," +
                 "mobiletime" + " TEXT ," +
                 "mac" + " TEXT ," +
                 "ssid" + " TEXT ," +

@@ -146,4 +146,24 @@ public class MobileWifi {
     public void setScanstr(String scanstr) {
         this.scanstr = scanstr == null ? null : scanstr.trim();
     }
+
+    @Override
+    public String toString() {
+        return "MobileWifi{" +
+                "id=" + id +
+                ", ltime=" + ltime +
+                ", mobiletime='" + mobiletime + '\'' +
+                ", mac='" + mac + '\'' +
+                ", ssid='" + ssid + '\'' +
+                ", bssid='" + bssid + '\'' +
+                ", rssi=" + rssi +
+                ", linkspeed=" + linkspeed +
+                ", frequency=" + frequency +
+                ", netid=" + netid +
+                ", score=" + score +
+                ", netrxspeed=" + netrxspeed +
+                ", nettxspeed=" + nettxspeed +
+                ", scanstr='" + scanstr + '\'' +
+                '}';
+    }
 }

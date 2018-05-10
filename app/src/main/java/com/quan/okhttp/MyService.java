@@ -89,7 +89,7 @@ public class MyService extends Service {
             //Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
         }
         public void setFtpAddr(String str_ftpAddr){
-            MyService.this.ftpAddr = str_ftpAddr;
+            ftpAddr = str_ftpAddr;
             //Toast.makeText(MyService.this, "interval set succeed by Binder!", Toast.LENGTH_LONG).show();
         }
         public void setFtpUser(String str_ftpUser){
@@ -177,7 +177,6 @@ public class MyService extends Service {
         new DownloadThread(3, "LDA.mp4").start();
 
 
-
         //新建线程，监测wifi的情况，如果断开，则连接。
         new Thread(new Runnable() {
             @Override
@@ -189,31 +188,31 @@ public class MyService extends Service {
                 while (true){
                     mWiFiManager.openWiFi();
                     if(mWiFiManager.isWifiEnabled()){
-                        Log.i(TAG, "Wwifi已经打开");
+                        Log.i(TAG, "wifi已经打开");
                         if(mWiFiManager.isWifiConnected()){
-                            Log.i(TAG, "Wwifi已经连接");
+                            Log.i(TAG, "wifi已经连接");
                             WifiInfo connectInfo = mWiFiManager.getConnectionInfo();
                             String SSID = connectInfo.getSSID();
                             if(SSID.equals("\"" + ssid + "\"")){
-                                Log.i(TAG, "已正确连接：" + SSID + " 状态良好");
+                                Log.i(TAG, "已正确连接wifi：" + SSID + " 状态良好");
                                 try {
-                                    sleep(1000*60*1);
+                                    sleep(1000*20);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
                             } else {
-                                Log.i(TAG, "已错误连接：" + SSID + " 即将断开");
+                                Log.i(TAG, "已错误连接wifi：" + SSID + " 即将断开");
                                 boolean res = mWiFiManager.disconnectCurrentWifi();
-                                Log.i(TAG, "断开状态：" + String.valueOf(res));
+                                Log.i(TAG, "断开wifi状态：" + String.valueOf(res));
                             }
                         } else {
                             Log.i(TAG, "当前未连接任何wifi，即将开始连接已设置的ssid:" + ssid );
                             boolean res = mWiFiManager.connectBeforeNetwork(ssid);
-                            Log.i(TAG, "连接"+ssid+"状态:" + String.valueOf(res));
+                            Log.i(TAG, "wifi连接"+ssid+"状态:" + String.valueOf(res));
                         }
 
                     } else {
-                        Log.i(TAG, "WIFI为关闭状态");
+                        Log.i(TAG, "wifi为关闭状态");
                     }
                     try {
                         sleep(1000*10);
@@ -274,7 +273,9 @@ public class MyService extends Service {
                 Date day = new Date();
                 SimpleDateFormat df  = new SimpleDateFormat("yyyyMMdd");
                 String currentDay = df.format(day);
-                String serverPath = currentDay + "/" + mySsid + "/";
+                String serverPath = "mobiledata" + "/" + currentDay + "/" + mySsid + "/";
+
+                Log.i(TAG, "FTP上传信息：" + uploadFtpAddr + " " + uploadFtpUsername + " " + uploadFtpPasword);
 
                 try {
                     if(ftpManager.connect(uploadFtpAddr, uploadFtpUsername, uploadFtpPasword)){
@@ -340,7 +341,7 @@ public class MyService extends Service {
                         e.printStackTrace();
                     }
                 }
-
+                Log.i(TAG, " FTP info:" + ftpAddr + " " + ftpUsername + " " + ftpPasword);
                 try {
                     if(ftpManager.connect(ftpAddr, ftpUsername, ftpPasword)){
                         Log.i(TAG, index + " FTP连接成功，即将开始下载...");

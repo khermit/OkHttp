@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -172,9 +173,11 @@ public class WiFiManager extends BaseWiFiManager {
         public void onReceive(Context context, Intent intent) {
 
             WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-            switch (intent.getAction()) {
+            String action = intent.getAction();
+            Log.i(TAG, "wifi BroadcastReceiver:" +  action);
+            switch (action) {
                 case WifiManager.WIFI_STATE_CHANGED_ACTION: // WIFI状态发生变化
+
                     switch (intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN)) {
                         case WifiManager.WIFI_STATE_ENABLING:
                             Log.i(TAG, "onReceive: 正在打开 WIFI...");
@@ -311,6 +314,7 @@ public class WiFiManager extends BaseWiFiManager {
                     }
                     break;
                 default:
+                    Log.i(TAG, "default: " + intent.getAction());
                     break;
             }
         }

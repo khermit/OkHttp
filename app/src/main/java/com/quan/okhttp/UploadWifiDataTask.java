@@ -29,7 +29,7 @@ public class UploadWifiDataTask {
     private WifiAdmin wifiAdmin ;
     private Context mContext;
     private String url = "http://192.168.0.102:8080/mobile/send";
-    private SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private WifiDataCURD myWifiDataCURD;
     TimerTask task = new TimerTask() {
         @Override
@@ -45,11 +45,13 @@ public class UploadWifiDataTask {
         new Timer().schedule(task, 1000, 1000);//2s后启动任务, 每1s执行一次
     }
     public void uploadWifiDataFunc(){
-        Log.i(TAG, "uploadWifiDataFunc");
+        Log.i(TAG, "uploadWifiDataFunc" + " isConnection:j;ljkfsd" + WifiAdmin.isConnection);
+        wifiAdmin.getWifiInfo(mw, mContext);
         mw.setMobiletime(df.format(new Date()));
         mw.setNetrxspeed(NetworkSpeedUtils.RxSpeed);
         mw.setNettxspeed(NetworkSpeedUtils.TxSpeed);
         if(isInsert){
+//            Log.i(TAG, "insert context: " + mw.toString());
             int res = myWifiDataCURD.insert(mw);//存入本地数据库
             Log.i(TAG, "insert database res: " + res);
         }

@@ -3,6 +3,7 @@ package com.quan.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.quan.okhttp.MobileWifi;
 
@@ -11,6 +12,7 @@ import com.quan.okhttp.MobileWifi;
  */
 
 public class WifiDataCURD {
+    private static final String TAG = "WifiDataCURD";
     private DBHelper dbHelper;
     private DatabaseContext dbContext;
     public WifiDataCURD(Context context){
@@ -22,7 +24,7 @@ public class WifiDataCURD {
         ContentValues values = new ContentValues();
         values.put("id", d.getId());
 
-        values.put("ltime", "");
+//        values.put("ltime", "");
         values.put("mobiletime", d.getMobiletime());
         values.put("mac", d.getMac());
         values.put("ssid", d.getSsid());
@@ -35,6 +37,7 @@ public class WifiDataCURD {
         values.put("netrxspeed", d.getNetrxspeed());
         values.put("nettxspeed", d.getNettxspeed());
         values.put("scanstr", d.getScanstr());
+//        Log.i(TAG, "insert context: " + d.toString());
 
         long wifiId = db.insert("mobilewifi", null, values);
         db.close();

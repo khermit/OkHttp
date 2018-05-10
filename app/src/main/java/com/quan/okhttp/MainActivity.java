@@ -167,9 +167,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 boolean flag = true;
                 while (flag){
                     if (null != binder){
-                        binder.setInterval(str_interval);
                         binder.setSsid(str_ssid);
+                        binder.setInterval(str_interval);
                         binder.setFtpAddr(str_ftpAddr);
+                        binder.setFtpUser(str_ftpUser);
+                        binder.setFtpPswd(str_ftpPswd);
+                        binder.setOkhttpaddr(str_okhttpaddr);
                         flag = false;
                     }
                 }
@@ -513,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         }else{
+            WifiAdmin.isConnection = 0;
             b.putString("wifi", "wifi closed!");
             WifiAdmin.isConnection = 0;
             msg.setData(b);
